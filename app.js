@@ -1,20 +1,14 @@
 const express = require("express");
 const helper = require ("./helper.js")
-const pokemons = require ("./mock-pokemon.js");
-const morgan = require ("morgan");
-const favico = require ('serve-favicon');
-const bodyParser = require ("body-parser");
+let pokemons = require ("./mock-pokemon.js");
 
 const app = express();
 const port = 3000;
 
 app.listen(port, () => console.log(`Notre application Nodes est demare sur : http://localhost:${port}`))
 
-
 app
-    .use(morgan("dev"))
-    .use(favico("./icone.png"))
-    .use (bodyParser.json());
+    .use(express.json());
 
 app.get("/", (req, res) => 
 {
@@ -35,8 +29,6 @@ app.get("/api/pokemons" , (req, res) =>
     res.status(200).json(helper ("La liste des Pokemons a bien ete trouve", pokemons));
 });
 
-
-
 let id = 12;
 app.post('/api/pokemons', (req, res) => {
     id++;
@@ -44,6 +36,28 @@ app.post('/api/pokemons', (req, res) => {
   pokemons.push(pokemonCreated)
   const message = `Le pokémon ${pokemonCreated.name} a bien été crée.`
   res.json(helper(message, pokemonCreated))
+})
+
+app.put('/api/pokemon/:id', (req, res) =>
+{
+    nbr = parseInt(req.params.id, 10);
+    const newPokemon = {...req.body};
+    pokemons = pokemons.map( pokemon => 
+    {
+        if (pokemon.id === nbr)
+        {
+            pokemon = {...pokemon, ...newPokemon};
+        }
+        return pokemon;
+    });
+    res.status(200).send("Pokemon modifie");
+})
+
+app.delete('/api/pokemon/:id', (req, res) =>
+{
+    id = parseInt(req.params.id, 10);
+    pokemons = pokemons.filter(pokemon =>pokemon.id != id);
+    res.status(200).send("Pokemon suprime");
 })
 
 app.listen (3000 , () => 
