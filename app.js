@@ -7,8 +7,9 @@ const port = 3000;
 
 app.listen(port, () => console.log(`Notre application Nodes est demare sur : http://localhost:${port}`))
 
-app
-    .use(express.json());
+app.use(express.json());
+
+app.use(express.static('public'));
 
 app.get("/", (req, res) => 
 {
